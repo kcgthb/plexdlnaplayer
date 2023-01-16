@@ -382,10 +382,7 @@ class PlexDlnaAdapter(object):
         if len(self.wait_state_change_events) > 3:
             e = self.wait_state_change_events.pop()
             e['event'].set()
-        try:
-            await asyncio.wait_for(event.wait(), timeout)
-        except asyncio.exceptions.TimeoutError:
-            pass
+        await asyncio.wait_for(event.wait(), timeout)
 
     async def play_media(self, container_key, key=None, offset=0, paused=False, query_params: QueryParams = None):
         if query_params is not None:
