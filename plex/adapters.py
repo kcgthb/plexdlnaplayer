@@ -382,6 +382,7 @@ class PlexDlnaAdapter(object):
         if len(self.wait_state_change_events) > 3:
             e = self.wait_state_change_events.pop()
             e['event'].set()
+            self.wait_state_change_events = []
         await asyncio.wait_for(event.wait(), timeout)
 
     async def play_media(self, container_key, key=None, offset=0, paused=False, query_params: QueryParams = None):
@@ -412,6 +413,9 @@ class PlexDlnaAdapter(object):
 
     async def refresh_queue(self, playQueueID):
         await self.queue.refresh_queue(playQueueID)
+        await self.clear_queue(self)
+
+    async def clear_queue(self):
         while len(self.wait_state_change_events) > 0:
             e = self.wait_state_change_events.pop()
             e['event'].set()

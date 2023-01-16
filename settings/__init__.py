@@ -17,7 +17,7 @@ class Settings(BaseSettings):
     data_file_name = "data.json"
     location_port_file_name = "dlna_servers.json"
     device_ports = []
-    current_port = 32489
+    base_port = 32489
 
     def dlna_name_alias(self, uuid: str, name: str, ip: str):
         data = self.load_data(self.data_file_name)
@@ -44,6 +44,8 @@ class Settings(BaseSettings):
         data = self.load_data(self.location_port_file_name)
         location = data.get(location, {})
         return location.get('port',None)
+    def load_dlna_locations(self):
+        return self.load_data(self.location_port_file_name)
 
     def save_dlna_location_port(self, location, port):
         data = self.load_data(self.location_port_file_name)
@@ -85,10 +87,18 @@ class Settings(BaseSettings):
 
     def allocate_new_port(self):
         """Allocate a new port, append to array."""
-        new_port = self.current_port
+        self.base_port = self.get_max_port_from_settings(self.base_port)
+        new_port = self.base_port + 1
         self.device_ports.append(new_port)
-        self.current_port += 1
         return new_port
+
+    def get_max_port_from_settings(self, default_port):
+        data = self.load_dlna_locations()
+        max_port = default_port
+        for location in data.values():
+            if location['port'] > max_port:
+                max_port = location['port']
+        return max_port
 
 
 settings = Settings()
