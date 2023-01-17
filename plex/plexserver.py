@@ -384,7 +384,7 @@ async def timeline_poll(request: Request,
                 'state', 'volume', 'current_uri', 'elapsed_jump'])
         except asyncio.exceptions.TimeoutError:
             print('timeout - ignoring')
-            await build_response("", device=device, status_code=200)
+            await build_response(XML_OK, device=device, status_code=200,  headers=timeline_poll_headers(device))
     msg = await sub_man.msg_for_device(device)
     while msg is None:
         print(f"waiting for msg {target_uuid}")
