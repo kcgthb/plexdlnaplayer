@@ -75,7 +75,7 @@ class DlnaDiscover(object):
         except Exception as e:
             print(f"socket reuse failed {e}")
 
-        self.socket.bind(("", SSDP_BROADCAST_PORT + 11))
+        self.socket.bind(("", SSDP_BROADCAST_PORT + 10))
         self.socket.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, 4)
         self.socket.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, socket.inet_aton(SSDP_BROADCAST_ADDR) +
                                socket.inet_aton('0.0.0.0'))
