@@ -194,8 +194,8 @@ class DlnaState(object):
             self.current_track_duration = int(
                 parse_timedelta(position_info.TrackDuration).total_seconds() * 1000)
             if not state and not self._changed_state and self.state in ("TRANSITIONING", "PLAYING"):
-                if __debug__:
-                    print(f"dlna {self.dlna.name} no eplased change? retry state")
+                #if __debug__:
+                #    print(f"dlna {self.dlna.name} no eplased change? retry state")
                 try:
                     state.result = await self.dlna.GetTransportInfo(client=client)
                 except Exception:
