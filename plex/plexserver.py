@@ -384,8 +384,7 @@ async def timeline_poll(request: Request,
                 'state', 'volume', 'current_uri', 'elapsed_jump'])
         except asyncio.exceptions.TimeoutError:
             print('timeout - ignoring')
-            await adapter.clear_queue()
-            await build_response("", device=device, status_code=500)
+            await build_response("", device=device, status_code=200)
     msg = await sub_man.msg_for_device(device)
     while msg is None:
         print(f"waiting for msg {target_uuid}")
@@ -454,15 +453,21 @@ async def mirror(target_uuid: str = Header(None, alias="x-plex-target-client-ide
 
 
 def start_plex_server(port=None):
+    startup_ok = True
     if port is None:
         port = settings.http_port
     if settings.host_ip is None:
         try:
             host_name = socket.gethostname()
             settings.host_ip = socket.gethostbyname(host_name)
-            print(f"Guessed host IP as {settings.host_ip}")
+            if settings.host_ip.startswith("127.0.0"):
+                print(f'Guessed host IP is useless - set HOST_IP manually - exiting')
+                startup_ok = False
+            else:
+                print(f"Guessed host IP as {settings.host_ip}")
         except:
             print(f"Could not guess host IP, use HOST_IP in startup.")
             pass
 
-    run_primary_uvicorn("plex:plex_server", host="0.0.0.0", port=port, loop="none")
+    if startup_ok:
+        run_primary_uvicorn("plex:plex_server", host="0.0.0.0", port=port, loop="none")
